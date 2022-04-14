@@ -7,20 +7,25 @@ def getColorMask(img, color):
     if color == "white":
         lowerBound = np.array([0, 0, 200])
         upperBound = np.array([180, 255, 255])
+    elif color == "black":
+        lowerBound = np.array([0, 0, 0])
+        upperBound = np.array([180, 255, 40])
     elif color == "orange":
         lowerBound = np.array([0, 180, 255])
         upperBound = np.array([20, 255, 255])
+    else:
+        print('\033[91m' + color, 'is not a valid color' + '\033[0m')
+        exit()
 
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     return cv2.inRange(hsv, lowerBound, upperBound)
-
 
 
 cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
 while 1:
     ret, image = cap.read()
-    mask = getColorMask(image, "white")
+    mask = getColorMask(image, "s")
 
     cnts, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
