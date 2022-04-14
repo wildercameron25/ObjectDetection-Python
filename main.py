@@ -1,7 +1,22 @@
-
 import cv2
 import numpy as np
 import sys
+
+def cleanImage(img):
+    kernel = np.ones((5, 5), np.uint8)
+
+    erode = cv2.erode(img, kernel, iterations=2)
+    dialate = cv2.dilate(erode, kernel, iterations=2)
+    return dialate
+
+def trackImage(img):
+    cnts, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    if len(cnts) != 0:
+        for c in cnts:
+            if cv2.contourArea(c) > 500:
+                x, y, w, h = cv2.boundingRect(c)
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 3)
 
 def getColorMask(img, color):
     color = color.lower()
@@ -26,21 +41,16 @@ cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
 while 1:
     ret, image = cap.read()
-    mask = getColorMask(image, "s")
+    mask = getColorMask(image, "black")
 
-    cnts, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-    if len(cnts) != 0:
-
-        for c in cnts:
-            if cv2.contourArea(c) > 500:
-                x, y, w, h = cv2.boundingRect(c)
-                cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 255), 3)
+    trackImage(image)
 
     cv2.imshow("mask", mask)
-    cv2.imshow("cam", image)
+    cv2.imshow("image", image)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    key = cv2.waitKey(1)
+
+    if key == ord('q'):
         cap.release()
         cv2.destroyAllWindows()
         break
