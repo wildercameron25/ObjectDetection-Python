@@ -1,6 +1,7 @@
 
 import cv2
 import numpy as np
+import sys
 
 def getColorMask(img, color):
     color = color.lower()
@@ -14,8 +15,8 @@ def getColorMask(img, color):
         lowerBound = np.array([0, 180, 255])
         upperBound = np.array([20, 255, 255])
     else:
-        print('\033[91m' + color, 'is not a valid color' + '\033[0m')
-        exit()
+        print("\033[33m" + "INVALID COLOR:", color + '\033[0m')
+        sys.exit()
 
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     return cv2.inRange(hsv, lowerBound, upperBound)
