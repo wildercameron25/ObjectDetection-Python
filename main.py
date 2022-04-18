@@ -20,6 +20,7 @@ def trackImage(img):
 
 def getColorMask(img, color):
     color = color.lower()
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     if color == "white":
         lowerBound = np.array([0, 0, 200])
         upperBound = np.array([180, 255, 255])
@@ -29,11 +30,18 @@ def getColorMask(img, color):
     elif color == "orange":
         lowerBound = np.array([0, 180, 255])
         upperBound = np.array([20, 255, 255])
+    elif color == "red":
+        lowerBound = np.array([0, 100, 20])
+        upperBound = np.array([10, 255, 255])
+        lowerMask = cv2.inRange(hsv, lowerBound, upperBound)
+        lowerBound = np.array([160, 100, 20])
+        upperBound = np.array([179, 255, 255])
+        upperMask = cv2.inRange(hsv, lowerBound, upperBound)
+        return lowerMask + upperMask
     else:
         print("\033[33m" + "INVALID COLOR:", color + '\033[0m')
         sys.exit()
 
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     return cv2.inRange(hsv, lowerBound, upperBound)
 
 
@@ -41,7 +49,7 @@ cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
 while 1:
     ret, image = cap.read()
-    mask = getColorMask(image, "black")
+    mask = getColorMask(image, "red")
 
     trackImage(image)
 
