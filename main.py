@@ -44,17 +44,29 @@ def getColorMask(img, color):
 
     return cv2.inRange(hsv, lowerBound, upperBound)
 
+def getOverlay(img, mask, color = None):
+    result = img.copy()
+    color = color.lower()
+    if color == "black":
+        return cv2.bitwise_not(result, result, mask = mask)
+
+    return cv2.bitwise_and(result, result, mask = mask)
 
 cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
+detectionColor = "red"
+
 while 1:
     ret, image = cap.read()
-    mask = getColorMask(image, "red")
+
+    mask = getColorMask(image, detectionColor)
+    overlay = getOverlay(image, mask, detectionColor)
 
     trackImage(image)
 
     cv2.imshow("mask", mask)
     cv2.imshow("image", image)
+    cv2.imshow("overlay", overlay)
 
     key = cv2.waitKey(1)
 
